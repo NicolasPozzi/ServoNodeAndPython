@@ -1,0 +1,101 @@
+<!doctype html>  
+<html>  
+<head>  
+      <meta charset="utf-8">  
+     <title>WebSockets - Simple chat</title>  
+     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>  
+</head>  
+<body>  
+     <div id="content"></div>  
+     <div>  
+          <span id="status">Connecting...</span>  
+     </div>  
+  
+<script type="text/javascript">  
+     $(function () {  
+          // Position Variables  
+          var x           = 0;  
+          var y           = 0;  
+          var z           = 0;  
+  
+          // Speed - Velocity  
+          var vx           = 0;  
+          var vy           = 0;  
+          var vz           = 0;  
+  
+          // Acceleration  
+          var ax           = 0;  
+          var ay           = 0;  
+          var az           = 0;  
+          var ai           = 0;  
+          var arAlpha = 0;  
+          var arBeta      = 0;  
+          var arGamma = 0;  
+  
+          var delay      = 200;  
+          var vMultiplier = 0.01;                 
+          var alpha      = 0;  
+            
+          var alpha      = 0;  
+          var beta      = 0;  
+          var gamma      = 0;  
+            
+          var content     = $('#content');  
+          var status      = $('#status');  
+  
+       // if user is running mozilla then use it's built-in WebSocket  
+       window.WebSocket = window.WebSocket || window.MozWebSocket;  
+            
+           if (!window.WebSocket) {  
+               content.html($('<p>', { text: 'Sorry, but your browser doesn\'t '  
+                                                       + 'support WebSockets.'} ));  
+               input.hide();  
+               $('span').hide();  
+               return;  
+          }  
+            
+            
+       var connection = new WebSocket('ws://'+document.domain+':1337');  
+  
+       connection.onopen = function () {  
+  
+               status.text('You are connected to ThanboPi Server.' +  
+                                   'Move your device and Have Fun!!');  
+       };  
+  
+       connection.onerror = function (error) {  
+          content.html($('<p>', { text: 'Sorry, but there\'s some problem with your '  
+                                                  + 'connection or the server is down.' } ));  
+       };  
+  
+  
+       if (window.DeviceMotionEvent!=undefined) {  
+  
+               window.ondevicemotion = function(event) {  
+                    ax = Math.round((event.accelerationIncludingGravity.x * 1));  
+                    ay = Math.round(Math.abs(event.accelerationIncludingGravity.y * 1));  
+                    az = Math.round(Math.abs(event.accelerationIncludingGravity.z * 1));            
+                    ai = Math.round(event.interval * 100) / 100;  
+                    rR = event.rotationRate;  
+                    if (rR != null) {  
+                         arAlpha = Math.round(rR.alpha);  
+                         arBeta      = Math.round(rR.beta);  
+                         arGamma = Math.round(rR.gamma);  
+                    }            
+               }  
+                                               
+               window.ondeviceorientation = function(event) {  
+                    alpha = Math.round(event.alpha);  
+                    beta = Math.round(event.beta);  
+                    gamma = Math.round(event.gamma);  
+               }       
+            
+               setInterval(function() {  
+                    connection.send('x' + ax);  
+               }, delay);                 
+          }  
+            
+     });  
+</script>  
+</body>  
+</html>      
